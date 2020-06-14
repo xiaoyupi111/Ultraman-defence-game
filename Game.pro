@@ -9,7 +9,7 @@ QT       += multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = TowerDefenseGame3
+TARGET = Game
 TEMPLATE = app
 CONFIG += resources_big
 
@@ -33,7 +33,9 @@ SOURCES += \
     towertank.cpp \
     ultraman7.cpp \
     defencetower.cpp \
-    monster.cpp
+    monster.cpp \
+    ultramantaro.cpp \
+    ultramanace.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -43,8 +45,9 @@ HEADERS += \
     towertank.h \
     ultraman7.h \
     defencetower.h \
-    wholestruct.h \
-    ultramantaro.h
+    ultramantaro.h \
+    struct.h \
+    ultramanace.h
 
 FORMS += \
     startpage.ui

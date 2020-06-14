@@ -2,7 +2,7 @@
 #define SELECTIONBOX_H
 
 #include <QString>
-#include "wholestruct.h"   //全局结构
+#include "struct.h"   //全局结构
 
 //选择框类
 class SelectionBox

@@ -1,5 +1,5 @@
-#ifndef WHOLESTRUCT_H
-#define WHOLESTRUCT_H
+#ifndef STRUCT_H
+#define STRUCT_H
 
 #include <QString>
 
@@ -15,7 +15,7 @@ struct SubbutStr
     QString SubImgPath; //子按钮的图片路径
 };
 
-//坐标
+//坐标（Qpoint也可以实现部分功能）
 struct CoorStr
 {
     int x;

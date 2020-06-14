@@ -2,12 +2,11 @@
 #include <QDebug>
 
 //怪物类函数实现
-Monster::Monster(CoorStr **pointarr, int arrlength, int x, int y, int mid) :
-    _x(x), _y(y), id(mid)
+Monster::Monster(CoorStr **pointarr, int num, int x, int y, int mid) :_x(x), _y(y), id(mid)
 {
-    for(int i = 0; i < arrlength; i++)
+    for(int i = 0; i < num; i++)
     {
-      //利用Waypoint来让怪兽入场，且waypoint是逆序链表，也就是说第一个点应该是home所在点
+      //利用Waypoint来让怪兽入场，且waypoint是逆序链表,利用push_back逆序插入
       Waypoint.push_back(pointarr[i]);
     }
 
@@ -16,16 +15,31 @@ Monster::Monster(CoorStr **pointarr, int arrlength, int x, int y, int mid) :
     {
     case 1:
         life = 100;   //生命值
+        _attack=1;
         _w = 64, _h = 64; //宽高
-        _speed=8;
+        _speed=5;
         ImgPath = ":/image/怪兽1.png";
-
         break;
     case 2:
-        life = 120;
-        _w = 84, _h = 64;
-        _speed=12;
+        life = 500;
+        _attack=1;
+        _w = 64, _h = 64;
+        _speed=5;
         ImgPath = ":/image/怪兽2.png";
+        break;
+    case 3:
+        life = 320;
+        _attack=2;
+        _w = 64, _h = 64;
+        _speed=10;
+        ImgPath = ":/image/怪兽3.png";
+        break;
+    case 4:
+        life = 1000;
+        _attack=5;
+        _w = 108, _h = 136;
+        _speed=2;
+        ImgPath = ":/image/怪兽4.png";
         break;
     default:
         break;
@@ -37,7 +51,7 @@ bool Monster::Move()
     if(Waypoint.empty())
         return true;
 
-    //如果第一个路径点的y小于怪物原本的路径点，则怪物向下走
+//每次都从第一个waypoint判断，在到达结点前走直线
     if (Waypoint.at(0)->y > _y) //下
     {
         _y += _speed;
@@ -62,34 +76,15 @@ bool Monster::Move()
         return false;
     }
 
-    //如果怪物的坐标和路径点坐标重合，删除路径点，继续前行
+    //如果怪物的坐标和路径点坐标重合，删除路径点，那么下一个路径点会成为需要判断的路径点，直到Waypoint数组清空
     if (Waypoint.at(0)->y == _y && Waypoint.at(0)->x == _x)
     {
-        delete Waypoint.begin();                //释放坐标点内存
         Waypoint.erase(Waypoint.begin());       //从数组中删除
-        return false;
+        delete Waypoint.begin();                //释放坐标点内存
     }
+    return false;
 }
 
-//画出血条
-
- void Monster::drawHpRect(QPainter *painter)
-{
-        // 血条的长度
-        // 其实就是2个方框,红色方框表示总生命,固定大小不变
-        // 绿色方框表示当前生命,受currentHp / life的变化影响
-        static const int Health_Width = 20;
-        painter->save();
-        QPoint healthBarPoint = QPoint(_x,_y)+ QPoint(-Health_Width / 2 - 5, _h/ 3);
-        // 绘制血条
-        painter->setPen(Qt::NoPen);
-        painter->setBrush(Qt::green);
-        QRect healthBarBackRect(healthBarPoint, QSize(Health_Width, 2));
-        painter->drawRect(healthBarBackRect);
-        painter->setBrush(Qt::red);
-        QRect healthBarRect(healthBarPoint, QSize((double)GetLife( )/ life* Health_Width, 2));
-        painter->drawRect(healthBarRect);
-}
 
 int Monster::GetX() const       //获取横坐标
 {
@@ -130,11 +125,15 @@ void Monster::SetLife(int hp)//设置生命值
 {
     life = hp;
 }
-int Monster::GetSpeed()const
+int Monster::GetAttack()const//获取怪兽攻击力
+{
+    return _attack;
+}
+int Monster::GetSpeed()const//获取速度
 {
     return _speed;
 }
-void Monster::SetSpeed(int speed)
+void Monster::SetSpeed(int speed)//设置速度
 {
     _speed=speed;
 }

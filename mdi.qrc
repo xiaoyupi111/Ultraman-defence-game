@@ -10,11 +10,19 @@
         <file>media/startbgm.wav</file>
         <file>image/赛文奥特曼一级.png</file>
         <file>media/gamebgm.wav</file>
-        <file>image/赛文奥特曼二级.png</file>
         <file>image/召唤阵.png</file>
         <file>image/购买状态赛文奥特曼.png</file>
         <file>image/怪兽1.png</file>
         <file>image/怪兽2.png</file>
         <file>image/升级.png</file>
+        <file>image/怪兽3.png</file>
+        <file>image/怪兽4.png</file>
+        <file>image/泰罗奥特曼一级.png</file>
+        <file>image/拆塔按钮.png</file>
+        <file>image/泰罗奥特曼购买状态.png</file>
+        <file>image/艾斯奥特曼.png</file>
+        <file>image/艾斯奥特曼购买状态.png</file>
+        <file>image/减速子弹.png</file>
+        <file>image/子弹3.png</file>
     </qresource>
 </RCC>

@@ -43,9 +43,15 @@ void SelectionBox::CheckTower(int x, int y)//防御塔坐标，用来确定点�
     //确定选择框的位置
     _x = x - 95, _y = y - 95;
 
-    //确定选择框产生后显示的图片中子按钮的位置
-    SubBut[1].SubX = _x + 14, SubBut[1].SubY = _y + 106;
+    SubBut[0].SubX = _x + 106, SubBut[0].SubY = _y + 14;//点击选择框后各个分按钮的位置
+    SubBut[0].SubImgPath = QString(":/image/泰罗奥特曼购买状态.png");
+
+    SubBut[1].SubX = _x + 14, SubBut[1].SubY = _y + 106;//点击选择框后各个分按钮的位置
     SubBut[1].SubImgPath = QString(":/image/购买状态赛文奥特曼.png");
+
+    SubBut[2].SubX = _x + 202, SubBut[2].SubY = _y + 106;//点击选择框后各个分按钮的位置
+    SubBut[2].SubImgPath = QString(":/image/艾斯奥特曼购买状态.png");
+
 
     display = true; //显示状态设为真
 }

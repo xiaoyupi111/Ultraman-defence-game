@@ -7,7 +7,7 @@
 class UltraMan7 : public DefenceTower
 {
 public:
-    UltraMan7 (int x, int y, int UMSLeftX, int UMSLeftY, int Swidth =300, int Sheight =300);
+    UltraMan7 (int x, int y, int UMSLeftX, int UMSLeftY, int Swidth =120, int Sheight =120);
 };
 
 #endif // ULTRAMAN7_H
