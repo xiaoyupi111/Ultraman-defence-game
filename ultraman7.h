@@ -7,6 +7,8 @@
 class UltraMan7 : public DefenceTower
 {
 public:
+    int GetX() const;       //获取横坐标
+    int GetY() const;       //获取横坐标
     UltraMan7 (int x, int y, int UMSLeftX, int UMSLeftY, int Swidth =120, int Sheight =120);
 };
 

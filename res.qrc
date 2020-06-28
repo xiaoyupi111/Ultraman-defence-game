@@ -1,0 +1,34 @@
+<RCC>
+    <qresource prefix="/">
+        <file>image/ace.png</file>
+        <file>image/bullet1.png</file>
+        <file>image/bullet3.png</file>
+        <file>image/bullet4.png</file>
+        <file>image/button2.png</file>
+        <file>image/buyingace.png</file>
+        <file>image/buyingleo.png</file>
+        <file>image/buyingseven.png</file>
+        <file>image/buyingtaro.png</file>
+        <file>image/deletebutton.png</file>
+        <file>image/grass.png</file>
+        <file>image/leo.png</file>
+        <file>image/monster1.png</file>
+        <file>image/monster2.png</file>
+        <file>image/monster3.png</file>
+        <file>image/monster4.png</file>
+        <file>image/myhome.png</file>
+        <file>image/road.png</file>
+        <file>image/selectionbox.png</file>
+        <file>image/seven.png</file>
+        <file>image/startform.jpg</file>
+        <file>image/summoncircle.png</file>
+        <file>image/taro.png</file>
+        <file>image/upgradebutton.png</file>
+        <file>media/gamebgm.wav</file>
+        <file>media/startbgm.wav</file>
+        <file>image/poisonmonster1.png</file>
+        <file>image/poisonmonster2.png</file>
+        <file>image/poisonmonster3.png</file>
+        <file>image/poisonmonster4.png</file>
+    </qresource>
+</RCC>

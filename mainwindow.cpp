@@ -3,33 +3,22 @@
 #include "struct.h"       //选择框按钮全局结构
 #include <math.h>               //因为要运用到许多数学计算
 #include "ultraman7.h"
+#include<start.h>
 #include"ultramantaro.h"
 #include"ultramanace.h"
+#include"ultramanleo.h"
 #include <QPushButton>
 #include <QSound>
 #include <QPainter>
-
-//因为是绘制的格子，一个格子长度是40，所以要通过格子数来确定坐标
-#define NewX(num) ((num) - 1) * 40 + 10
-
-//判断鼠标点击位置（或者可以用监听）
-#define MouseClickRegion(X, Width, Y, Height)\
-    (ev->x() >= (X) && ev->x() <= (X) + (Width) &&\
-    ev->y() >= (Y) && ev->y() <= (Y) + (Height))
-
-//插入怪物 怪物初始坐标、怪物编号
-#define InsterMonster(StaCoorNum, MonsterId)     \
-MonsterVec.push_back(new Monster(pointarr, PathLength, NewX(staco[StaCoorNum].x), NewX(staco[StaCoorNum].y), MonsterId));
-
+#include <windows.h>
 
 //计算两点之间距离
 #define Distance(X1, Y1, X2, Y2)           \
 abs(sqrt((((X1) - (X2)) * ((X1) - (X2))) + (((Y1) - (Y2)) * ((Y1) - (Y2)))))
 
 
-
 //构造
-MainWindow::MainWindow()
+MainWindow::MainWindow(int Number):Number(Number)
 {
     //设置固定窗口大小
     setFixedSize(1040, 640);
@@ -105,21 +94,41 @@ MainWindow::MainWindow()
 
     //怪物入场的定时器，以此来判断时候让什么怪兽入场
     QTimer* timer2 = new QTimer(this);
-    timer2->start(2000);//2000ms也就是2s
+    timer2->start(3000);//3000ms也就是3s
     connect(timer2,&QTimer::timeout,[=]()
     {
+        switch (Number)
+        {
+        case 0:
+            {
             //设置路径点
-            CoorStr* Waypointarr[4]= {new CoorStr(NewX(8), NewX(13)), new CoorStr(NewX(16), NewX(13)), new CoorStr(NewX(16), NewX(9)), new CoorStr(homecoor->x, homecoor->y)};
+            CoorStr* Waypointarr[4]= {new CoorStr(290, 490), new CoorStr(610, 490), new CoorStr(610, 330), new CoorStr(homecoor->x, homecoor->y)};
             //怪物的2个起始点
-            CoorStr staco[] = {CoorStr(8, 0), CoorStr(8,-1)};
+            CoorStr staco[] = {CoorStr(290, -30), CoorStr(290,-70)};
             //转折点的个数
             int PathLength= sizeof(Waypointarr)/sizeof(CoorStr*);
             InsertMonster(Waypointarr, staco, PathLength, victorylable);   //产生怪物
+            break;
+            }
+        case 1:
+        {
+            //设置路径点
+            CoorStr* Waypointarr[5]= {new CoorStr(130, 290), new CoorStr(770, 290), new CoorStr(770, 490), new CoorStr(210, 490),new CoorStr(homecoor->x, homecoor->y)};
+            //怪物的2个起始点
+            CoorStr staco[] = {CoorStr(130, -30), CoorStr(130,-70)};
+            //转折点的个数
+            int PathLength= sizeof(Waypointarr)/sizeof(CoorStr*);
+            InsertMonster(Waypointarr, staco, PathLength, victorylable);   //产生怪物
+            break;
+        }
+        default:
+            break;
+            }
     });
 
     //防御塔更新的定时器
     QTimer* timer = new QTimer(this);
-    timer->start(60);
+    timer->start(60);//60ms更新一次
     connect(timer,&QTimer::timeout,[=]()
     {
         //防御塔寻找目标怪物的规律：找到最后一个怪物作为目标，目标丢失后找再继续找最后一个目标
@@ -153,37 +162,6 @@ MainWindow::MainWindow()
                         defei->SetAimsMonster(NULL);     //超过距离将目标怪物设为空
         }
 
-        //防御塔子弹移动
-        for (auto defei : DefeTowerVec)
-            defei->BulletMove();
-
-        //调用怪物移动函数，判断怪物是否走到终点需要删除
-        for (auto monsteri = MonsterVec.begin(); monsteri!= MonsterVec.end(); monsteri++)
-        {
-            if((*monsteri)->Move()) //当怪物走到终点无法再移动时
-            {
-
-                delete *monsteri;//释放空间
-                MonsterVec.erase(monsteri);//删除怪物
-
-                life=life-(*monsteri)->GetAttack();                    //生命=生命-怪兽攻击力
-                lifelable->setText(QString("生命値：%1").arg(life));//更新生命值
-
-                if (life <= 0)
-                    {
-                    falselable->show();//生命值为0时弹出游戏失败窗口
-                    QTimer* timer3 = new QTimer(this);
-                    timer3->start(3000);//3s后自动关闭界面
-                    connect(timer3,&QTimer::timeout,[=]()
-                    {
-                        this->close();
-                    });
-                    }
-
-                break;
-            }
-        }
-
         //判断子弹是否击中怪物
         for (auto defei : DefeTowerVec)  //防御塔
         {
@@ -195,8 +173,27 @@ MainWindow::MainWindow()
                     {   //击中怪物时
                         tbullvec.erase(bullit);     //删除子弹
 
-                        (*monit)->SetLife((*monit)->GetLife() - defei->GetAttack());      //敌人血量 = 本身血量-当前炮塔攻击力                     
-                       if((*monit)->GetSpeed()>=5) (*monit)->SetSpeed((*monit)->GetSpeed() - defei->GetReduceSpeed());//假如敌人速度大于等于5那么减速炮塔发挥减速作用
+                        (*monit)->SetLife((*monit)->GetLife() - defei->GetAttack());      //敌人血量 = 本身血量-当前炮塔攻击力
+                       if((*monit)->GetRedSpeed()==false && (*monit)->GetSpeed()>2&&defei->GetReduceSpeed()!=0 && (*monit)->GetLife() >= 0)//假如敌人速度大于2且没有被减速那么减速炮塔发挥减速作用
+                       {
+                           (*monit)->SetRedSpeed(true);
+                           int currents=(*monit)->GetSpeed();
+                           (*monit)->SetSpeed((*monit)->GetSpeed() - defei->GetReduceSpeed());
+                           QTimer::singleShot(600,this,[=](){
+                               (*monit)->SetSpeed(currents);
+                               (*monit)->SetRedSpeed(false);//重新将怪物的减速状态设为未减速
+                           });
+
+                       }
+                       if(defei->GetPoisonHp()!=0&&(*monit)->GetPoison()==false && (*monit)->GetLife() >= 0)//假如当前怪物没有中毒,那么炮塔使其中毒
+                       {                           
+                               (*monit)->SetPoison(true);//设置成已中毒
+                               (*monit)->SetLife((*monit)->GetLife() - defei->GetPoisonHp());
+                       }
+                       if((*monit)->GetPoison()==true&& (*monit)->GetLife() >= 0)//假如已经中毒，直接扣血
+                       {
+                           (*monit)->SetLife((*monit)->GetLife() - defei->GetPoisonHp());
+                       }
 
                         if ((*monit)->GetLife() <= 0) //生命值为空时
                         {
@@ -220,11 +217,37 @@ MainWindow::MainWindow()
                     }
             L1:;
         }
+
+        //防御塔子弹移动
+        for (auto defei : DefeTowerVec)
+            defei->BulletMove();
+
+        //调用怪物移动函数，判断怪物是否走到终点需要删除
+        for (auto monsteri = MonsterVec.begin(); monsteri!= MonsterVec.end(); monsteri++)
+        {
+            if((*monsteri)->Move()) //当怪物走到终点无法再移动时
+            {
+
+                delete *monsteri;//释放空间
+                MonsterVec.erase(monsteri);//删除怪物
+
+                life=life-(*monsteri)->GetAttack();                    //生命=生命-怪兽攻击力
+                lifelable->setText(QString("生命値：%1").arg(life));//更新生命值
+
+                if (life <= 0)
+                    {
+                    falselable->show();//生命值为0时弹出游戏失败窗口
+                    QTimer::singleShot(3000,this,[=](){
+                        this->close();
+                    });
+                    }
+
+                break;
+            }
+        }
         update();   //绘图
     });
 }
-
-
 //判断金钱是否足够并刷新标签
 bool MainWindow::JudgeYourMoney(int money)
 {
@@ -240,26 +263,32 @@ void MainWindow::InsertMonster(CoorStr** Waypointarr, CoorStr* staco, int PathLe
 {
     CoorStr** pointarr= Waypointarr;
 
-    if(counter >= 1 && counter <= 14)
+    if(counter >= 1 && counter <= 9)
     {
-        InsterMonster(0,1); //第几个起始点、怪物编号
+        MonsterVec.push_back(new Monster(pointarr, PathLength, staco[0].x, staco[0].y,1));
     }
-    else if(counter > 14 && counter <= 36)
+
+    else if(counter > 9 && counter <= 30)
     {
-        InsterMonster(0,2);
+        MonsterVec.push_back(new Monster(pointarr, PathLength, staco[0].x, staco[0].y,1));
+        MonsterVec.push_back(new Monster(pointarr, PathLength, staco[1].x, staco[1].y,2));
     }
-    else if (counter > 36 && counter <= 52)
+    else if (counter > 30 && counter <= 48){
+        MonsterVec.push_back(new Monster(pointarr, PathLength, staco[0].x, staco[0].y,3));
+    }
+
+    else if (counter > 48 && counter <= 66)
     {
-        InsterMonster(0,2);
-        InsterMonster(1,3);
+        MonsterVec.push_back(new Monster(pointarr, PathLength, staco[0].x, staco[0].y,4));
     }
-    else if (counter > 52 && counter <= 73)
-    {
-        InsterMonster(0,3);
-        InsterMonster(1,4);
-    }
-    if (counter > 73 && MonsterVec.empty())   //时间大于75且怪物数组为空时游戏胜利
-        victorylable->show();
+
+    if (counter > 66 && MonsterVec.empty())//时间大于76且怪物数组为空时游戏胜利
+        {
+        victorylable->show();      
+        QTimer::singleShot(3000,this,[=](){
+            this->close();
+        });
+        }
 
     counter++;          //计数器+1
     update();
@@ -269,7 +298,7 @@ void MainWindow::InsertMonster(CoorStr** Waypointarr, CoorStr* staco, int PathLe
 void MainWindow::DrawMapArr(QPainter& painter)
 {
     //地图数组
-    int Map[16][26] =
+    int Map_1[16][26] =
     {
         0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -288,7 +317,40 @@ void MainWindow::DrawMapArr(QPainter& painter)
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     };
+    //第二关
+    int Map_2[16][26] =
+    {
+        0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 1, 1, 3, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 1, 1, 6, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 1, 1, 0, 0, 3, 6, 0, 0, 3, 6, 0, 0, 0, 3, 6, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 1, 1, 0, 0, 6, 6, 0, 0, 6, 6, 0, 0, 0, 6, 6, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 6, 0, 0, 0,
+        0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6, 6, 0, 0, 0,
+        0, 0, 3, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0,
+        0, 0, 6, 6, 0, 3, 6, 0, 0, 0, 0, 3, 6, 0, 0, 0, 0, 3, 6, 1, 1, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 6, 6, 0, 0, 0, 0, 6, 6, 0, 0, 0, 0, 6, 6, 1, 1, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 5, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    };
 
+    int Map[16][26];    //单拿出来一个数组用来copy哪一关,方便后续绘图
+
+    switch (Number)
+    {
+    case 0:
+        memcpy(Map, Map_1, sizeof(Map));
+        break;
+    case 1:
+        memcpy(Map, Map_2, sizeof(Map));
+        break;
+    default:
+        break;
+    }
    //根据数字判断用switch语句判断该画什么
     for (int j = 0; j < 16; j++)
         for (int i = 0; i < 26; i++)
@@ -296,24 +358,24 @@ void MainWindow::DrawMapArr(QPainter& painter)
             switch (Map[j][i])
             {
             case 0:     //草地
-                painter.drawPixmap(i*40, j*40, 40, 40,QPixmap(":/image/地砖.png"));
+                painter.drawPixmap(i*40, j*40, 40, 40,QPixmap(":/image/grass.png"));
                 break;
             case 1:     //地面
-                painter.drawPixmap(i*40, j*40, 40, 40,QPixmap(":/image/道路.png"));
+                painter.drawPixmap(i*40, j*40, 40, 40,QPixmap(":/image/road.png"));
                 break;
             case 3:     //防御塔坑
-                painter.drawPixmap(i*40, j*40, 80, 80,QPixmap(":/image/召唤阵.png"));
+                painter.drawPixmap(i*40, j*40, 80, 80,QPixmap(":/image/summoncircle.png"));
                 //防御塔坑坐标插入到塔坑对象数组
                 TowerTankVec.push_back(new TowerTank(i*40, j*40));
                 break;
             case 5:
-                painter.drawPixmap(i*40, j*40, 40, 40, QPixmap(":/image/道路.png"));
+                painter.drawPixmap(i*40, j*40, 40, 40, QPixmap(":/image/road.png"));
                 homecoor->x = i * 40, homecoor->y = j * 40;
                 break;
             }
         }
 
-    painter.drawPixmap(homecoor->x, homecoor->y, 80, 80,QPixmap(":/image/等离子火花塔.png"));//画出家
+    painter.drawPixmap(homecoor->x, homecoor->y, 80, 80,QPixmap(":/image/myhome.png"));//画出家
   }
 
 //画出选择框
@@ -364,8 +426,17 @@ void MainWindow::DrawDefenseTower(QPainter& painter)
 //画出怪物
 void MainWindow::DrawMonster(QPainter& painter)
 {
-    for (auto moni : MonsterVec)//画出怪物
-        painter.drawPixmap(moni->GetX(), moni->GetY(), moni->GetWidth(), moni->GetHeight(), QPixmap(moni->GetImgPath()));
+    for (auto moni : MonsterVec)
+        {
+        //画出怪物
+        if(moni->GetPoison()==false)
+        {
+            painter.drawPixmap(moni->GetX(), moni->GetY(), moni->GetWidth(), moni->GetHeight(), QPixmap(moni->GetImgPath()));
+        }
+        if(moni->GetPoison()==true)
+            painter.drawPixmap(moni->GetX(), moni->GetY(), moni->GetWidth(), moni->GetHeight(), QPixmap(moni->GetPoiImgPath()));
+    }
+
 }
 
 //画出升级按钮以及防御塔攻击范围圈圈
@@ -376,7 +447,7 @@ void MainWindow::DrawRangeAndUpgrade(QPainter& painter)
         {   //画出防御塔攻击范围
             painter.setPen(QPen(Qt::white));  //设置颜色画出范围
             painter.drawEllipse(QPoint(DisplayRangeX + 40, DisplayRangeY + 40), defei->GetRange(), defei->GetRange());
-            painter.drawPixmap(DisplayRangeX + 0, DisplayRangeY - 40, 90, 30, QPixmap(":/image/升级.png"));//画出升级按钮图片并设置大小和位置
+            painter.drawPixmap(DisplayRangeX + 0, DisplayRangeY - 40, 90, 30, QPixmap(":/image/upgradebutton.png"));//画出升级按钮图片并设置大小和位置
         }
 }
 //画出防御塔拆除按钮
@@ -386,7 +457,7 @@ void MainWindow::DrawDestroyTower(QPainter &painter)
         if(defei->GetUpLeftX() == DisplayRangeX && defei->GetUpLeftY() == DisplayRangeY&&DisplayRange)
         {
             painter.drawEllipse(QPoint(DisplayRangeX + 40, DisplayRangeY + 40), defei->GetRange(), defei->GetRange());
-            painter.drawPixmap(DisplayRangeX + 30, DisplayRangeY + 80, 40, 40, QPixmap(":/image/拆塔按钮.png"));//画出升级按钮图片并设置大小和位置
+            painter.drawPixmap(DisplayRangeX + 30, DisplayRangeY + 80, 40, 40, QPixmap(":/image/deletebutton.png"));//画出升级按钮图片并设置大小和位置
         }
 }
 //绘图事件
@@ -409,7 +480,7 @@ void MainWindow::paintEvent(QPaintEvent *)
 
 //鼠标点击事件
 void MainWindow::mousePressEvent(QMouseEvent *ev)
-{
+{    
     if (ev->button() != Qt::LeftButton)
         return;
 
@@ -417,7 +488,7 @@ void MainWindow::mousePressEvent(QMouseEvent *ev)
     if (DisplayRange)
     {
         //假如鼠标点击区域落在以下坐标，那么是拆除
-        if (MouseClickRegion(DisplayRangeX + 30, 40 , DisplayRangeY + 80, 40))
+        if (ev->x()>=DisplayRangeX + 30&&ev->x()<=DisplayRangeX + 70&&ev->y()>=DisplayRangeY + 80&&ev->y()<=DisplayRangeY + 120)
         {
             //拆除防御塔
             for (auto defei = DefeTowerVec.begin();defei!=DefeTowerVec.end();defei++)
@@ -434,7 +505,7 @@ void MainWindow::mousePressEvent(QMouseEvent *ev)
             return;
         }
         //假如鼠标点击区域落在以下坐标那么是升级防御塔
-        if (MouseClickRegion(DisplayRangeX + 0, 90 , DisplayRangeY - 40, 30))
+        if (ev->x()>=DisplayRangeX&&ev->x()<=DisplayRangeX + 90&&ev->y()>=DisplayRangeY - 40&&ev->y()<=DisplayRangeY-10)
         {
             //设置防御塔宽高，攻击力，微调坐标
             for (auto defei : DefeTowerVec)
@@ -443,7 +514,8 @@ void MainWindow::mousePressEvent(QMouseEvent *ev)
                     if (JudgeYourMoney(200)) return;        //升级防御塔花费200
 
                     defei->SetAttack(defei->GetAttack() + 15);          //每次升级防御塔攻击力+15
-                    defei->SetReduceSpeed(defei->GetReduceSpeed()+1);
+                    defei->SetReduceSpeed(defei->GetReduceSpeed()+1);//减速效果增强
+                    defei->SetPoisonHp(defei->GetPoisonHp()+2);//中毒效果增强
                     defei->SetWidthHeight(defei->GetWidth() + 12, defei->GetHeight() + 6);   //防御塔变大
                     defei->SetXY(defei->GetX() - 6, defei->GetY() - 3); //调整防御塔坐标
                     defei->SetAimsMonster(NULL);                        //将防御塔目标设为空
@@ -464,7 +536,7 @@ void MainWindow::mousePressEvent(QMouseEvent *ev)
     //判断选择框四个子按钮的点击
     SubbutStr *ASubBut = SelBox->GetSelSubBut();
     for (int i = 0; i < 4; i++)
-        if (MouseClickRegion(ASubBut[i].SubX, ASubBut[i].SubWidth, ASubBut[i].SubY, ASubBut[i].SubHeight) && SelBox->GetDisplay())
+        if (ev->x()>=ASubBut[i].SubX&&ev->x()<=ASubBut[i].SubX+ASubBut[i].SubWidth&&ev->y()>=ASubBut[i].SubY&&ev->y()<=ASubBut[i].SubY+ASubBut[i].SubHeight&&SelBox->GetDisplay())
         {
             SelBox->SetDisplay(false);      //取消显示选择框
             //判断选择了哪一个
@@ -482,6 +554,11 @@ void MainWindow::mousePressEvent(QMouseEvent *ev)
                 if (JudgeYourMoney(240)) return;
                 DefeTowerVec.push_back(new UltraManAce(SelBox->GetX() + 110, SelBox->GetY() + 112, SelBox->GetX() + 95, SelBox->GetY() + 95, 70, 40));
                 break;
+            case 3:
+                if (JudgeYourMoney(200)) return;
+                DefeTowerVec.push_back(new UltraManLeo(SelBox->GetX() + 110, SelBox->GetY() + 112, SelBox->GetX() + 95, SelBox->GetY() + 95, 32, 56));
+                break;
+
             default:
                 break;
             }
@@ -492,7 +569,7 @@ void MainWindow::mousePressEvent(QMouseEvent *ev)
     //遍历所有塔坑
     for (auto ATank : TowerTankVec)
         //判断点击塔坑
-        if (MouseClickRegion(ATank->GetX(), ATank->GetWidth(), ATank->GetY(), ATank->GetHeight()))
+        if (ev->x()>=ATank->GetX()&&ev->x()<=ATank->GetX() + ATank->GetWidth() &&ev->y()>=ATank->GetY()&&ev->y()<=ATank->GetY()+ATank->GetHeight())
         {
             DisplayRange = false;               //降防御塔的升级选择显示关闭
             for (auto defei : DefeTowerVec)      //遍历数组判断防御塔坐标和点击坑坐标重合则返回

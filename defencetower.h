@@ -9,10 +9,10 @@ class DefenceTower
 {
 //防御塔属性
 public:
-    int GetX() const;       //获取横坐标
-    int GetY() const;       //获取横坐标
-    int GetWidth() const;   //获取宽
-    int GetHeight() const;  //获取高
+    virtual int GetX() const;       //获取横坐标
+    virtual int GetY() const;       //获取横坐标
+    virtual int GetWidth() const;   //获取宽
+    virtual int GetHeight() const;  //获取高
     int GetRotatAngle() const; //获取旋转角度
     int GetUpLeftX() const; //获取防御塔左上角原横坐标
     int GetUpLeftY() const; //获取防御塔左上角原纵坐标
@@ -32,10 +32,12 @@ public:
     int GetBulletHeight() const;    //获取子弹的宽度
     int GetAttack() const;          //防御塔攻击力
     int GetReduceSpeed() const;          //得到减速
+    int GetPoisonHp()const;             //中毒效果
 
 
     //以下是升级时候需要设置的
     void SetReduceSpeed(int);            //设置减速
+    void SetPoisonHp(int);               //设置中毒效果
     void SetAttack(int);            //设置防御塔攻击力
     void SetWidthHeight(int, int);  //设置防御塔宽高
     void SetXY(int, int);           //设置坐标
@@ -58,6 +60,7 @@ protected:
     int counter = 0;        //计数
     int attack;             //防御塔攻击力
     int _reducespeed;       //减速效果
+    int _poisonhp;          //中毒效果
     QString BullPath;       //子弹图片路径
     QVector<BulletStr*> BulletVec;  //存储子弹坐标的数组
 };

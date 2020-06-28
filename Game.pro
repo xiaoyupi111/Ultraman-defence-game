@@ -35,7 +35,8 @@ SOURCES += \
     defencetower.cpp \
     monster.cpp \
     ultramantaro.cpp \
-    ultramanace.cpp
+    ultramanace.cpp \
+    ultramanleo.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -47,10 +48,11 @@ HEADERS += \
     defencetower.h \
     ultramantaro.h \
     struct.h \
-    ultramanace.h
+    ultramanace.h \
+    ultramanleo.h
 
 FORMS += \
     startpage.ui
 
 RESOURCES += \
-    mdi.qrc
+    res.qrc

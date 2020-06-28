@@ -29,15 +29,14 @@ private:
     void DrawDefenseTower(QPainter&);       //画出防御塔
     void DrawMonster(QPainter&);            //画出怪物
     void DrawRangeAndUpgrade(QPainter&);    //画出防御塔攻击范围和升级按钮
-    void DrawDestroyTower(QPainter&);
+    void DrawDestroyTower(QPainter&);//画出拆塔按钮
 
     int DisplayRangeX, DisplayRangeY;       //记录正在显示范围的防御塔的坐标，以便开关
     bool DisplayRange = false;              //用于显示防御塔攻击范围，初始都是false，就是关闭着的
     bool playmusic=true;//控制播放音乐
 
-    int money = 1000;   //记录金钱
+    int money = 800;   //记录金钱
     QLabel *moneylable = new QLabel(this);   //显示金钱标签控件
-
     inline bool JudgeYourMoney(int);         //判断金钱是否足够购买并更新金币标签
 
     int life = 10;      //生命数量
@@ -48,13 +47,16 @@ private:
 
     int RewardMoney = 40; //每次击败怪兽获得的金钱数量
 
+     const int Number;      //标识关卡
+
     CoorStr *homecoor = new CoorStr(0, 0);  //记录被保护的目标的坐标，coorstr是坐标Struct，从地图中实时获取
 
     bool DisplayAllRange = false;  //是否显示所有防御塔的攻击范围的标识
-    SelectionBox* SelBox = new SelectionBox(":/image/选择框.png"); //显示选择框
+    SelectionBox* SelBox = new SelectionBox(":/image/selectionbox.png"); //显示选择框
+
 
 public:
-    MainWindow();            //构造
+    MainWindow(int);            //构造
     ~MainWindow();
 };
 

@@ -109,7 +109,7 @@ void DefenceTower::BulletMove()
 {
     for(auto bulli : BulletVec)//Bullet数组从头开始往后改变
     {
-        const int speed = 25;              //设置子弹移动速度
+        const int speed = 20;              //设置子弹移动速度
 
         if(bulli->dirflag == true)
             bulli->_coor.x -= speed;        //根据移动方向标记判断每颗子弹的移动方向
@@ -135,6 +135,14 @@ int DefenceTower::GetBulletWidth() const //获取子弹的宽度
 int DefenceTower::GetBulletHeight() const//获取子弹的宽度
 {
     return bullheight;
+}
+int DefenceTower::GetPoisonHp()const//获取中毒效果
+{
+    return _poisonhp;
+}
+void DefenceTower::SetPoisonHp(int poihp)//设置中毒效果
+{
+    _poisonhp=poihp;
 }
 int DefenceTower::GetReduceSpeed()const//得到减速效果
 {

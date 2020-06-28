@@ -31,9 +31,9 @@
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>220</x>
-     <y>350</y>
-     <width>171</width>
+     <x>110</x>
+     <y>190</y>
+     <width>121</width>
      <height>71</height>
     </rect>
    </property>
@@ -44,7 +44,7 @@
     </font>
    </property>
    <property name="text">
-    <string>ゲームを開始</string>
+    <string>1</string>
    </property>
   </widget>
   <widget class="QLabel" name="label">
@@ -71,6 +71,19 @@
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'幼圆'; font-size:28pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#f0f0f0;&quot;&gt;超決戦ベリア銀河帝国&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_2">
+   <property name="geometry">
+    <rect>
+     <x>370</x>
+     <y>190</y>
+     <width>121</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>2</string>
    </property>
   </widget>
  </widget>

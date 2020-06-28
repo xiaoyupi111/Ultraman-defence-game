@@ -14,32 +14,36 @@ Monster::Monster(CoorStr **pointarr, int num, int x, int y, int mid) :_x(x), _y(
     switch (id)
     {
     case 1:
-        life = 100;   //生命值
+        life = 200;   //生命值
         _attack=1;
         _w = 64, _h = 64; //宽高
-        _speed=5;
-        ImgPath = ":/image/怪兽1.png";
+        _speed=2;
+        ImgPath = ":/image/monster1.png";
+        PoisonImgPath=":/image/poisonmonster1.png";
         break;
     case 2:
-        life = 500;
+        life = 400;
         _attack=1;
         _w = 64, _h = 64;
-        _speed=5;
-        ImgPath = ":/image/怪兽2.png";
+        _speed=2;
+        ImgPath = ":/image/monster2.png";
+        PoisonImgPath=":/image/poisonmonster2.png";
         break;
     case 3:
-        life = 320;
+        life = 400;
         _attack=2;
         _w = 64, _h = 64;
-        _speed=10;
-        ImgPath = ":/image/怪兽3.png";
+        _speed=5;
+        ImgPath = ":/image/monster3.png";
+        PoisonImgPath=":/image/poisonmonster3.png";
         break;
     case 4:
         life = 1000;
-        _attack=5;
-        _w = 108, _h = 136;
+        _attack=4;
+        _w = 64, _h = 64;
         _speed=2;
-        ImgPath = ":/image/怪兽4.png";
+        ImgPath = ":/image/monster4.png";
+        PoisonImgPath=":/image/poisonmonster4.png";
         break;
     default:
         break;
@@ -110,7 +114,10 @@ QString Monster::GetImgPath() const //获取图片路径
 {
     return ImgPath;
 }
-
+QString Monster::GetPoiImgPath()const
+{
+    return PoisonImgPath;
+}
 int Monster::GetId() const      //获取编号
 {
     return id;
@@ -136,4 +143,20 @@ int Monster::GetSpeed()const//获取速度
 void Monster::SetSpeed(int speed)//设置速度
 {
     _speed=speed;
+}
+bool Monster::GetPoison()const//得到是否中毒
+{
+    return ispoison;
+}
+void Monster::SetPoison(bool poi)//设置是否中毒
+{
+    ispoison=poi;
+}
+bool Monster::GetRedSpeed()const//得到是否已经被减速
+{
+    return isredspeed;
+}
+void Monster::SetRedSpeed(bool redspeed)//设置是否被减速
+{
+    isredspeed=redspeed;
 }
